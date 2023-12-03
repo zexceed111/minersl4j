@@ -63,8 +63,11 @@ class Candidate {
     public int[] getHeader(){
         int[] header = new int[Blockchain.HEADER_LENGHT];
         for (int idx = 0; idx < header.length; idx++){
-            header[idx] = (int) Math.min(Math.max(0, Math.round(Math.random() * 10)), 9);
+            int next = (int) Math.min(Math.max(0, Math.round(Math.random() * 10)), 9);
+            header[idx] = next;
+            System.out.print("..." + next);
         }
+        System.out.println(";");
         return header;
     }
 
