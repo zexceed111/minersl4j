@@ -8,7 +8,7 @@ public class Miner {
 
     private static final int CANDIDATES_COUNT = 345;
 
-    private static final int MINING_CYCLES_COUNT = 5432;
+    private static final int MINING_CYCLES_COUNT = 54321;
 
     public static void main(String[] args) {
         System.out.println("Starting a new JRE coin mining session!");

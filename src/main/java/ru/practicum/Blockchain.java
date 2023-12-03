@@ -11,7 +11,7 @@ public class Blockchain {
 
     public static final int HEADER_LENGHT = 6;
 
-    private int nextShift = 0;
+    private int nextShift = HEADER_LENGHT;
 
     private final int[] nextHeader = new int[HEADER_LENGHT];
 
@@ -91,28 +91,27 @@ public class Blockchain {
         }
     }
 
+    //это алгоритм, вычисляющий n-ый знак одной знаменитой
+    // математической константы, которая известна как "золотое сечение"
     private static int calculatePhiNthDigit(int n) {
-        MathContext mc = new MathContext(n + 2); // Extra precision to account for rounding
+        MathContext mc = new MathContext(n + 2);
         BigDecimal a = BigDecimal.ZERO;
         BigDecimal b = BigDecimal.ONE;
         BigDecimal phiApprox;
 
-        // Use Fibonacci sequence to approximate phi
-        for (int i = 0; i < n * n; i++) { // n*n ensures sufficient iterations
+        for (int i = 0; i < n * n; i++) {
             BigDecimal nextFib = a.add(b);
             a = b;
             b = nextFib;
         }
-        phiApprox = b.divide(a, mc); // Calculate phi approximation
+        phiApprox = b.divide(a, mc);
 
-        // Shift decimal point n places
         BigDecimal tenPowerN = BigDecimal.TEN.pow(n);
         phiApprox = phiApprox.multiply(tenPowerN);
 
-        // Extract nth digit
         String phiString = phiApprox.toPlainString();
         int decimalIndex = phiString.indexOf('.');
-        int nthIndex = decimalIndex - 1; // Account for the index of the decimal point and the integer part "1"
+        int nthIndex = decimalIndex - 1;
         char nthDigitChar = phiString.charAt(nthIndex);
         return Character.getNumericValue(nthDigitChar);
     }
