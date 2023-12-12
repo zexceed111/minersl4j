@@ -61,7 +61,7 @@ class Candidate {
     }
 
     public int[] getHeader(){
-        int[] header = new int[Blockchain.HEADER_LENGHT];
+        int[] header = new int[Blockchain.HEADER_LENGTH];
         for (int idx = 0; idx < header.length; idx++){
             int next = (int) Math.min(Math.max(0, Math.round(Math.random() * 10)), 9);
             header[idx] = next;

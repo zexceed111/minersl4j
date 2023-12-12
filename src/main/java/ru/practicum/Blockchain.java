@@ -9,18 +9,18 @@ import java.util.Optional;
 
 public class Blockchain {
 
-    public static final int HEADER_LENGHT = 6;
+    public static final int HEADER_LENGTH = 6;
 
-    private int nextShift = HEADER_LENGHT;
+    private int nextShift = HEADER_LENGTH;
 
-    private final int[] nextHeader = new int[HEADER_LENGHT];
+    private final int[] nextHeader = new int[HEADER_LENGTH];
 
     private LinkedList<Block> blocks = new LinkedList<>();
 
     public Blockchain(){
         System.out.println("Created a blockchain structure.");
         Block initialBlock = new Block();
-        initialBlock.header = new int[HEADER_LENGHT];
+        initialBlock.header = new int[HEADER_LENGTH];
         initialBlock.previousHashCode = 0;
         initialBlock.reward = 0;
         initialBlock.winner = "practicum";
@@ -33,7 +33,7 @@ public class Blockchain {
     public void prepareNextHeader(){
         nextShift += (int) Math.round(Math.random() * 10) + 1;
         System.out.println("Next shift is "+nextShift);
-        for(int n = nextShift; n < nextShift + HEADER_LENGHT; n++){
+        for(int n = nextShift; n < nextShift + HEADER_LENGTH; n++){
             nextHeader[n - nextShift] = calculatePhiNthDigit(n);
         }
         System.out.println("next header is " + Arrays.toString(nextHeader));
