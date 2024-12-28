@@ -6,8 +6,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Blockchain {
+
+
 
     public static final int HEADER_LENGTH = 6;
 
