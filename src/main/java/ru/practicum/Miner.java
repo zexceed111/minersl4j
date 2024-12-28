@@ -1,6 +1,9 @@
 package ru.practicum;
 
+import ch.qos.logback.classic.Level;
 import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -10,35 +13,39 @@ public class Miner {
 
     private static final int MINING_CYCLES_COUNT = 54321;
 
-    public static void main(String[] args) {
-        System.out.println("Starting a new JRE coin mining session!");
-        Blockchain blockchain = new Blockchain();
-        System.out.println("Created a blockchain");
-        List<Candidate> candidateList = initCandidateList(blockchain, CANDIDATES_COUNT);
-        System.out.println("Created list of candidates");
+    private static final Logger log = LoggerFactory.getLogger(Miner.class);
 
-        System.out.println("Running a mining cycle");
+    public static void main(String[] args) {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+                .setLevel(Level.INFO);
+
+        log.info("Starting a new JRE coin mining session!");
+        Blockchain blockchain = new Blockchain();
+        log.trace("Created a blockchain");
+        List<Candidate> candidateList = initCandidateList(blockchain, CANDIDATES_COUNT);
+        log.trace("Created list of candidates");
+
+        log.info("Running a mining cycle");
         Map<String, Integer> rewards = new HashMap<>();
 
         for (int cycle = 0; cycle < MINING_CYCLES_COUNT; cycle++){
-            System.out.println("Starting mining cycle "+cycle);
+            log.debug("Starting mining cycle {}", cycle);
             for (Candidate candidate : candidateList) {
-                System.out.println("Starting candidate try "+candidate.getName());
+                log.debug("Starting candidate try {}", candidate.getName());
                 int[] candidateHeader = candidate.getHeader();
                 Optional<Blockchain.Block> maybeBlock = blockchain.checkHeader(candidate.getName(), candidateHeader);
                 if(maybeBlock.isPresent()){
                     Blockchain.Block block = maybeBlock.get();
                     rewards.put(candidate.getName(), block.getReward() + rewards.getOrDefault(candidate.getName(), 0));
-                    System.out.println("Candidate "+ candidate.getName()+"win a reward");
+                    log.info("Candidate {} win a reward", candidate.getName());
                 } else {
-                    System.out.println("Candidate "+ candidate.getName()+" did not win");
+                    log.debug("Candidate {} did not win", candidate.getName());
                 }
             }
         }
 
-
         rewards.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEach(winner -> {
-            System.out.println("Winner is "+winner.getKey()+" with reward "+winner.getValue());
+            log.info("Winner is {} with reward {}", winner.getKey(), winner.getValue());
         });
     }
 
@@ -52,6 +59,9 @@ public class Miner {
 }
 
 class Candidate {
+
+    private static final Logger log = LoggerFactory.getLogger(Candidate.class);
+
     private final Blockchain blockchain;
     private final String name;
 
@@ -65,9 +75,9 @@ class Candidate {
         for (int idx = 0; idx < header.length; idx++){
             int next = (int) Math.min(Math.max(0, Math.round(Math.random() * 10)), 9);
             header[idx] = next;
-            System.out.print("..." + next);
+            log.trace("...{}", next);
         }
-        System.out.println(";");
+        log.trace(";");
         return header;
     }
 

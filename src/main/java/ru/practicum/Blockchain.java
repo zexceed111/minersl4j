@@ -1,19 +1,20 @@
 package ru.practicum;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Blockchain {
 
-
-
     public static final int HEADER_LENGTH = 6;
+
+    private static final Logger log = LoggerFactory.getLogger(Blockchain.class);
 
     private int nextShift = HEADER_LENGTH;
 
@@ -22,42 +23,47 @@ public class Blockchain {
     private LinkedList<Block> blocks = new LinkedList<>();
 
     public Blockchain(){
-        System.out.println("Created a blockchain structure.");
+        log.trace("Created a blockchain structure.");
         Block initialBlock = new Block();
         initialBlock.header = new int[HEADER_LENGTH];
         initialBlock.previousHashCode = 0;
         initialBlock.reward = 0;
         initialBlock.winner = "practicum";
-        System.out.println("Created initial block "+initialBlock.hashCode());
+        log.debug("Created initial block {}", initialBlock.hashCode());
         blocks.add(initialBlock);
-        System.out.println("Added initial block");
+        log.trace("Added initial block");
         prepareNextHeader();
     }
 
     public void prepareNextHeader(){
-        nextShift += (int) Math.round(Math.random() * 10) + 1;
-        System.out.println("Next shift is "+nextShift);
-        for(int n = nextShift; n < nextShift + HEADER_LENGTH; n++){
-            nextHeader[n - nextShift] = calculatePhiNthDigit(n);
+        try {
+            nextShift += (int) Math.round(Math.random() * 10) + 1;
+            log.debug("Next shift is {}", nextShift);
+            for (int n = nextShift; n < nextShift + HEADER_LENGTH; n++) {
+                nextHeader[n - nextShift] = calculatePhiNthDigit(n);
+            }
+            log.debug("next header is {}", Arrays.toString(nextHeader));
+        } catch (Exception e){
+            log.error("error while building next header", e);
+            throw new RuntimeException(e);
         }
-        System.out.println("next header is " + Arrays.toString(nextHeader));
     }
 
     public Optional<Block> checkHeader(String nameCandidate, int[] headerCandidate){
-        System.out.println("Candidate "+ nameCandidate + " wants to check block header " + Arrays.toString(headerCandidate));
+        log.debug("Candidate {} wants to check block header {}", nameCandidate,  Arrays.toString(headerCandidate));
         if(Objects.deepEquals(headerCandidate, nextHeader)) {
-            System.out.println("Candidate " + nameCandidate + " is a winner");
+            log.trace("Candidate {} is a winner", nameCandidate);
             Block nextBlock = new Block();
             nextBlock.reward = 1;
             nextBlock.winner = nameCandidate;
             nextBlock.previousHashCode = blocks.getLast().hashCode();
             nextBlock.header = nextHeader;
             blocks.add(nextBlock);
-            System.out.println("Created next block "+nextBlock.hashCode());
+            log.debug("Created next block {}", nextBlock.hashCode());
             prepareNextHeader();
             return Optional.of(nextBlock);
         } else {
-            System.out.println("Candidate " + nameCandidate + " was wrong: "+Arrays.toString(headerCandidate) + " != "+Arrays.toString(nextHeader));
+            log.debug("Candidate {} was wrong: {} != {}", nameCandidate, Arrays.toString(headerCandidate), Arrays.toString(nextHeader));
             return Optional.empty();
         }
     }
@@ -95,7 +101,7 @@ public class Blockchain {
         }
     }
 
-    //это алгоритм, вычисляющий n-ый знак одной знаменитой
+    // Это алгоритм, вычисляющий n-й знак одной знаменитой
     // математической константы, которая известна как "золотое сечение"
     private static int calculatePhiNthDigit(int n) {
         MathContext mc = new MathContext(n + 2);
